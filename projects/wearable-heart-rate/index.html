@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Recording PPG signals and estimating heart rate in a Wear OS application.">
+    <meta name="theme-color" content="#f8f7f4">
+    <title>
+      Wearable heart-rate prototype · Bernardo Godinho
+    </title>
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../assets/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a class="wordmark" href="../../index.html" aria-label="Bernardo Godinho, home">Bernardo Godinho</a>
+      <nav aria-label="Main navigation">
+        <a href="../../index.html">Home</a>
+    <a href="../../experience/index.html">Experience</a>
+    <a href="../../projects/index.html" aria-current="page">Projects</a>
+    <a href="../../assets/documents/bernardo-godinho-cv.pdf">CV <span class="file-label">PDF</span></a>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="case-heading">
+        <p class="breadcrumb">
+          <a href="../../projects/index.html">← Projects</a>
+        </p>
+        <h1>
+          Wearable heart-rate prototype
+        </h1>
+        <p class="lead">
+          From raw optical signals to a live heart-rate estimate on a Samsung Galaxy Watch.
+        </p>
+        <dl class="case-meta">
+          <div>
+            <dt>
+              Platform
+            </dt>
+            <dd>
+              Wear OS · Samsung sensors
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Stack
+            </dt>
+            <dd>
+              Kotlin · Jetpack Compose
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Signal
+            </dt>
+            <dd>
+              Photoplethysmography (PPG)
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <div class="case-layout">
+        <aside class="case-nav" aria-label="On this page">
+          <p>
+            On this page
+          </p>
+          <a href="#overview">The prototype</a><a href="#processing">Signal processing</a><a href="#validation">Watch comparison</a><a href="#links">Code</a>
+        </aside>
+        <article class="case-content" aria-label="Project details">
+          <section id="overview">
+            <h2>
+              The prototype
+            </h2>
+            <p>
+              I built a Wear OS application to explore heart-rate estimation directly from a watch’s
+              raw PPG signals. It acquires green, infrared and red channels through Samsung’s Health
+              Sensor SDK, displays the green waveform and estimates BPM on the watch.
+            </p>
+            <p>
+              The application combines sensor permissions and connection handling with a Compose
+              interface and timestamped CSV recording. Raw signals are saved for offline inspection,
+              making it possible to examine the data behind the displayed number.
+            </p>
+          </section>
+
+          <section id="processing">
+            <h2>
+              From PPG to BPM
+            </h2>
+            <p>
+              The pipeline assumes 100 Hz sampling and skips the first two seconds before
+              processing. Stateful Butterworth filters apply a 0.5 Hz high-pass and a 4 Hz low-pass
+              to the green channel, removing baseline drift and attenuating higher-frequency noise.
+            </p>
+            <p>
+              A five-second window advances every second. An adaptive peak detector identifies
+              candidate pulses; valid intervals are restricted to 40–200 BPM, and the median
+              interval gives the heart-rate estimate. A check against the previous estimate favours
+              consistent intervals while allowing a fallback when all are rejected.
+            </p>
+            <p>
+              The waveform shows raw green PPG, while BPM comes from the filtered signal. The CSV
+              records all three raw optical channels and timestamps. Separating acquisition,
+              filtering and estimation made the processing choices explicit and available for
+              further experimentation.
+            </p>
+          </section>
+
+          <section id="validation">
+            <h2>
+              Comparison with the Galaxy Watch
+            </h2>
+            <p>
+              In informal personal testing, I compared my estimates with the Galaxy Watch’s built-in
+              BPM readings and observed broadly similar values in the situations tested. This was a
+              useful practical check of the custom processing pipeline.
+            </p>
+            <p>
+              The comparison was qualitative: there is no published paired-reference error analysis
+              or evaluation across participants and exercise conditions. Motion, watch contact and
+              the assumed sampling rate remain limitations. The current prototype has no dedicated
+              motion-artifact rejection and records while the activity is running.
+            </p>
+          </section>
+
+          <section id="links">
+            <h2>
+              Explore the code
+            </h2>
+            <p>
+              <a class="text-link" href="https://github.com/Bernardo-JG/Wearable-heart-rate">Wearable heart-rate on GitHub</a>
+            </p>
+            <p>
+              The README explains the processing parameters, device requirements, build setup and
+              recording format. Separate Kotlin and Python experiments are included alongside the
+              watch application.
+            </p>
+          </section>
+
+          <a class="return-link" href="../../projects/index.html">← Back to projects</a>
+        </article>
+
+      </div>
+    </main>
+    <footer class="site-footer shell">
+      <div>
+        <a class="footer-name" href="../../index.html">Bernardo Justiça Godinho</a>
+        <p>
+          Porto, Portugal
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:bernardojusticagodinho@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/bernardo-godinho-79a141219/">LinkedIn</a>
+    <a href="https://github.com/Bernardo-JG">GitHub</a>
+      </div>
+    </footer>
+
+  </body>
+</html>

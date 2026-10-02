@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Heartbeat-evoked potential analysis around 33 temporal lobe seizures, with seizure-grouped machine learning and SHAP explanations.">
+    <meta name="theme-color" content="#f8f7f4">
+    <title>
+      Brain–heart interactions in epilepsy · Bernardo Godinho
+    </title>
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../assets/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a class="wordmark" href="../../index.html" aria-label="Bernardo Godinho, home">Bernardo Godinho</a>
+      <nav aria-label="Main navigation">
+        <a href="../../index.html">Home</a>
+    <a href="../../experience/index.html" aria-current="page">Experience</a>
+    <a href="../../projects/index.html">Projects</a>
+    <a href="../../assets/documents/bernardo-godinho-cv.pdf">CV <span class="file-label">PDF</span></a>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="case-heading">
+        <p class="breadcrumb">
+          <a href="../../experience/index.html">← Experience</a>
+        </p>
+        <h1>
+          Brain–heart interactions in epilepsy
+        </h1>
+        <p class="lead">
+          Comparing heartbeat-locked EEG before and after temporal lobe seizures through signal
+          processing, machine learning and model explanations.
+        </p>
+        <dl class="case-meta">
+          <div>
+            <dt>
+              Organisation
+            </dt>
+            <dd>
+              DTU Health Tech, Denmark
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Role
+            </dt>
+            <dd>
+              Erasmus+ research intern
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Dates
+            </dt>
+            <dd>
+              Sep 2025–Feb 2026
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <div class="case-layout">
+        <aside class="case-nav" aria-label="On this page">
+          <p>
+            On this page
+          </p>
+          <a href="#problem">The research question</a><a href="#contribution">My contribution</a><a href="#analysis">Signals &amp; model analysis</a><a href="#evaluation">Results &amp; limitations</a><a href="#reflection">What I took from it</a><a href="#publication">Article</a>
+        </aside>
+        <article class="case-content" aria-label="Project details">
+          <section id="problem">
+            <h2>
+              The research question
+            </h2>
+            <p>
+              Heartbeat-evoked potentials (HEPs) are EEG responses aligned to the ECG R-peak. This
+              study asked whether features of those responses distinguish the periods before and
+              after seizures in people with temporal lobe epilepsy.
+            </p>
+            <p>
+              We analysed 33 seizures from 12 patients selected from the Siena Scalp EEG Dataset,
+              version 1.0.0, available through PhysioNet. Recordings contained simultaneous EEG and
+              ECG sampled at 512 Hz. Comparisons used 10-minute pre-ictal and post-ictal segments,
+              with one retained post-ictal segment lasting 9 minutes 39 seconds.
+            </p>
+          </section>
+
+          <section id="contribution">
+            <h2>
+              My contribution
+            </h2>
+            <p>
+              During my research internship, I processed EEG and ECG recordings in Python, extracted
+              time-domain and time-frequency features, compared machine-learning models with
+              cross-validation, and used SHAP to examine what drove their predictions.
+            </p>
+            <p>
+              I am the second author of the study, with Matteo Saibene and Sadasivan Puthusserypady
+              at DTU Health Tech. The methods and results below describe our shared study.
+            </p>
+          </section>
+
+          <section id="analysis">
+            <h2>
+              Signals &amp; model analysis
+            </h2>
+            <h3>
+              Preparing heartbeat-aligned EEG
+            </h3>
+            <p>
+              EEG preprocessing used a 0.3–30 Hz bandpass, a 50 Hz notch filter and resampling to
+              256 Hz. Independent component analysis, supported by ICLabel and manual inspection,
+              removed components identified as cardiac, ocular or motion artefacts before
+              common-average referencing. ECG was filtered at 8–20 Hz; NeuroKit2 detected R-peaks,
+              followed by correction of atypical or missed detections.
+            </p>
+            <p>
+              EEG epochs extended from −200 to +700 ms around each R-peak, with baseline correction
+              over −200 to −50 ms. Feature analysis focused on 300–450 ms after the R-peak. Epochs
+              were rejected when the next heartbeat occurred within 450 ms or peak-to-peak amplitude
+              exceeded 200 µV in any channel. This reduced overlap from subsequent heartbeats during
+              tachycardia.
+            </p>
+            <figure>
+              <a href="../../assets/images/dtu-article-signals.png"><img src="../../assets/images/dtu-article-signals.png" alt="Grand-average frontal EEG and ECG aligned to heartbeats across 33 seizures, comparing pre-ictal blue and post-ictal red traces with the 300–450 ms analysis window highlighted." loading="lazy"></a>
+              <figcaption>
+                Article Figure 2: grand-average HEP and ECG across all 33 seizures. Frontal
+                electrodes are averaged for visualisation; EEG shaded bands show the standard error
+                of the mean. The highlighted window is 300–450 ms after the R-peak.
+              </figcaption>
+            </figure>
+            <h3>
+              Features and validation
+            </h3>
+            <p>
+              The feature set combined waveform amplitude and shape, Shannon entropy, spatial
+              summaries, epoch-to-epoch correlation, spectral power and inter-trial coherence, which
+              measures phase consistency across heartbeats. Morlet wavelets covered theta, alpha,
+              beta and broadband activity. Features were calculated across 29 EEG channels,
+              producing 1,193 features per segment after adding global field power statistics and
+              seizure-onset lateralisation.
+            </p>
+            <p>
+              Five-fold GroupKFold cross-validation grouped data by seizure: the pre- and post-ictal
+              segments of each seizure stayed in the same fold. Standardisation used training data
+              within each fold, and the full feature set was retained without dimensionality
+              reduction. The models included Random Forest, XGBoost, linear discriminant analysis,
+              Gaussian Naive Bayes, logistic regression and an RBF support vector machine.
+            </p>
+          </section>
+
+          <section id="evaluation">
+            <h2>
+              Results &amp; limitations
+            </h2>
+            <div class="table-scroll">
+              <table class="results-table">
+                <caption>
+                  Article Table II: five-fold seizure-grouped cross-validation; mean ± standard
+                  deviation across folds
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      Model
+                    </th>
+                    <th scope="col">
+                      ROC AUC
+                    </th>
+                    <th scope="col">
+                      Balanced accuracy
+                    </th>
+                    <th scope="col">
+                      F1
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                      Random Forest
+                    </th>
+                    <td>
+                      0.8272 ± 0.0620
+                    </td>
+                    <td>
+                      0.7762 ± 0.0598
+                    </td>
+                    <td>
+                      0.7538 ± 0.0838
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      XGBoost
+                    </th>
+                    <td>
+                      0.7716 ± 0.0933
+                    </td>
+                    <td>
+                      0.6786 ± 0.0762
+                    </td>
+                    <td>
+                      0.6667 ± 0.0628
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      Linear discriminant analysis
+                    </th>
+                    <td>
+                      0.7408 ± 0.1471
+                    </td>
+                    <td>
+                      0.6690 ± 0.1642
+                    </td>
+                    <td>
+                      0.6638 ± 0.1525
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      Gaussian Naive Bayes
+                    </th>
+                    <td>
+                      0.6716 ± 0.0569
+                    </td>
+                    <td>
+                      0.6524 ± 0.0787
+                    </td>
+                    <td>
+                      0.6355 ± 0.0751
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      Logistic regression
+                    </th>
+                    <td>
+                      0.6671 ± 0.1599
+                    </td>
+                    <td>
+                      0.6333 ± 0.1392
+                    </td>
+                    <td>
+                      0.6426 ± 0.0864
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      Logistic regression (L1)
+                    </th>
+                    <td>
+                      0.6730 ± 0.09323
+                    </td>
+                    <td>
+                      0.6071 ± 0.1185
+                    </td>
+                    <td>
+                      0.6075 ± 0.1532
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      SVM (RBF)
+                    </th>
+                    <td>
+                      0.7074 ± 0.0881
+                    </td>
+                    <td>
+                      0.4833 ± 0.0372
+                    </td>
+                    <td>
+                      0.5263 ± 0.2946
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Random Forest achieved the strongest overall cross-validated performance. TreeSHAP
+              explanations, aggregated across electrodes by feature family, identified the standard
+              deviation of epoch-to-epoch pairwise correlation as the most influential feature type.
+              Theta-band inter-trial coherence was another prominent contributor. These results
+              suggest that response consistency across heartbeats carries information beyond
+              isolated amplitude measurements.
+            </p>
+            <figure>
+              <a href="../../assets/images/dtu-article-shap.png"><img src="../../assets/images/dtu-article-shap.png" alt="SHAP feature-family ranking led by the standard deviation of epoch-to-epoch correlation, followed by theta inter-trial coherence." loading="lazy"></a>
+              <figcaption>
+                Article Figure 3: Random Forest feature contributions. SHAP values were aggregated
+                across electrodes by feature type, then their absolute values averaged.
+              </figcaption>
+            </figure>
+            <p>
+              This is a pilot demonstration of separability within the dataset. Grouping by seizure
+              prevents paired segments from crossing folds, but patients can appear in both training
+              and test data through different seizures. The results therefore do not establish
+              generalisation to unseen patients or seizure prediction.
+            </p>
+            <p>
+              The small cohort makes performance sensitive to fold composition. Post-ictal EEG
+              slowing may affect theta coherence and correlation independently of heartbeat-specific
+              processing. Epoch rejection was also higher after seizures: 20.4% ± 18.5%, compared
+              with 9.5% ± 11.5% before seizures. Short post-ictal windows limit conclusions about
+              longer recovery, and larger datasets are needed for patient-level validation and
+              comparisons with interictal periods.
+            </p>
+          </section>
+
+          <section id="reflection">
+            <h2>
+              What I took from it
+            </h2>
+            <p>
+              This work reinforced how much model interpretation depends on signal preparation and
+              evaluation design. Looking at heartbeat-aligned traces, rejected epochs and feature
+              contributions made it possible to connect classification scores to the recordings and
+              to recognise competing explanations for the observed differences.
+            </p>
+          </section>
+
+          <section id="publication">
+            <h2>
+              Article
+            </h2>
+            <p>
+              Saibene, M., Godinho, B. J. &amp; Puthusserypady, S. <em>Analysis of Heartbeat Evoked Potentials in Temporal Lobe Epilepsy.</em> Second author.
+            </p>
+            <p class="source-line">
+              This case study follows the supplied DTU article. My CV lists the paper for IEEE EMBC
+              2026.
+            </p>
+          </section>
+
+          <a class="return-link" href="../../experience/index.html">← Back to experience</a>
+        </article>
+
+      </div>
+    </main>
+    <footer class="site-footer shell">
+      <div>
+        <a class="footer-name" href="../../index.html">Bernardo Justiça Godinho</a>
+        <p>
+          Porto, Portugal
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:bernardojusticagodinho@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/bernardo-godinho-79a141219/">LinkedIn</a>
+    <a href="https://github.com/Bernardo-JG">GitHub</a>
+      </div>
+    </footer>
+
+  </body>
+</html>

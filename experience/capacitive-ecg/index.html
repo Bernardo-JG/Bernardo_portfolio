@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A battery-isolated capacitive ECG front end, PCB design and chest-band validation against simultaneous wet-electrode recordings.">
+    <meta name="theme-color" content="#f8f7f4">
+    <title>
+      Capacitive ECG acquisition &amp; signal processing · Bernardo Godinho
+    </title>
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../assets/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a class="wordmark" href="../../index.html" aria-label="Bernardo Godinho, home">Bernardo Godinho</a>
+      <nav aria-label="Main navigation">
+        <a href="../../index.html">Home</a>
+    <a href="../../experience/index.html" aria-current="page">Experience</a>
+    <a href="../../projects/index.html">Projects</a>
+    <a href="../../assets/documents/bernardo-godinho-cv.pdf">CV <span class="file-label">PDF</span></a>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="case-heading">
+        <p class="breadcrumb">
+          <a href="../../experience/index.html">← Experience</a>
+        </p>
+        <h1>
+          Capacitive ECG acquisition &amp; signal processing
+        </h1>
+        <p class="lead">
+          Designing a battery-isolated ECG front end and validating cardiac rhythm recovery against
+          simultaneous wet-electrode recordings.
+        </p>
+        <dl class="case-meta">
+          <div>
+            <dt>
+              Context
+            </dt>
+            <dd>
+              INESC TEC · University of Porto
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Role
+            </dt>
+            <dd>
+              Researcher · Master’s thesis
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Research role
+            </dt>
+            <dd>
+              Apr–Sep 2026
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <div class="case-layout">
+        <aside class="case-nav" aria-label="On this page">
+          <p>
+            On this page
+          </p>
+          <a href="#problem">The problem</a><a href="#contribution">My contribution</a><a href="#system">The acquisition system</a><a href="#evaluation">Evaluation &amp; limitations</a><a href="#publication">Article</a>
+        </aside>
+        <article class="case-content" aria-label="Project details">
+          <section id="problem">
+            <h2>
+              The problem
+            </h2>
+            <p>
+              Capacitive ECG senses the heart’s electrical activity through an insulating layer,
+              such as clothing, without conductive gel or skin preparation. That makes it attractive
+              for less obtrusive monitoring, but the weak coupling leaves the signal vulnerable to
+              power-line interference, unstable contact and motion.
+            </p>
+            <p>
+              My thesis explored a fully battery-powered system built from commercial components,
+              targeting acquisition from a single limb. Wrist placement did not produce a
+              recognisable ECG, so I evaluated the prototype in a chest-band configuration. The
+              resulting study establishes what the system can recover reliably and where its
+              limitations remain.
+            </p>
+          </section>
+
+          <section id="contribution">
+            <h2>
+              My contribution
+            </h2>
+            <p>
+              I designed and tested the acquisition system, connecting analog front-end and PCB
+              design with Python-based recording, filtering and signal-quality analysis. The work
+              covered circuit simulation in TINA-TI, a two-layer PCB in KiCad, bench
+              characterisation and on-body comparison with a simultaneous reference ECG.
+            </p>
+            <p>
+              The article is co-authored with Miguel Velhote Correia at INESC TEC and the Faculty of
+              Engineering, University of Porto. I am its first author.
+            </p>
+          </section>
+
+          <section id="system">
+            <h2>
+              The acquisition system
+            </h2>
+            <figure>
+              <a href="../../assets/images/ecg-article-system.png"><img src="../../assets/images/ecg-article-system.png" alt="ECG system diagram connecting two EPIC electrodes to floating AC coupling, an INA188 amplifier, capacitive driven-right-leg feedback and a ScientISST board." loading="lazy"></a>
+              <figcaption>
+                Article Figure 1: the capacitive electrodes, signal-conditioning unit and
+                acquisition board. Select the image to view it at full size.
+              </figcaption>
+            </figure>
+            <p>
+              Two Plessey EPIC PS25201B active capacitive electrodes feed a floating, symmetric
+              AC-coupling network and an INA188 instrumentation amplifier. An OPA188-based
+              capacitive driven-right-leg (cDRL) loop senses common-mode interference and feeds an
+              inverted signal back to the body through a third capacitive surface.
+            </p>
+            <p>
+              The ScientISST board provides a 24-bit ADC and Bluetooth Low Energy streaming to a
+              Python application for display and storage. A 3.3 V battery and an ICL7660 charge pump
+              provide the bipolar supply, isolating the acquisition chain from mains. The custom PCB
+              integrates the conditioning stages, supply circuit, sensor connections and board
+              interface.
+            </p>
+            <p>
+              Simulation compared AC coupling and cDRL separately and together under 50 Hz
+              interference, baseline wander and unequal electrode coupling. Combining both stages
+              reduced interference while keeping the baseline stable. Bench measurements gave
+              approximately 300× passband gain, with −3 dB corners near 0.2 Hz and 10 kHz.
+            </p>
+            <figure>
+              <a href="../../assets/images/ecg-article-prototype.png"><img src="../../assets/images/ecg-article-prototype.png" alt="Fabricated ECG signal-conditioning prototype mounted on an elastic chest band and connected to a ScientISST board." loading="lazy"></a>
+              <figcaption>
+                Article Figure 3: the chest-band prototype used for on-body validation.
+              </figcaption>
+            </figure>
+            <p>
+              On-body testing exposed saturation in the original feedback stage. Reducing cDRL gain
+              from −2 to −0.2 while retaining an approximately 159 Hz loop bandwidth, together with
+              a grounded metal enclosure around the PCB, restored linear operation. Chest-band
+              electrodes were spaced 5 cm apart.
+            </p>
+          </section>
+
+          <section id="evaluation">
+            <h2>
+              Evaluation &amp; limitations
+            </h2>
+            <p>
+              Four initial chest-band recordings covered galvanic and capacitive driven-leg
+              feedback, on bare skin and through one cotton layer. All produced recognisable ECG and
+              heart-rate estimates of 55–57.5 bpm. Template signal-to-noise ratio ranged from 19 to
+              30.5 dB; this metric measures beat-to-beat reproducibility. Contact quality varied, so
+              these recordings demonstrate acquisition across conditions rather than a controlled
+              comparison of their effects.
+            </p>
+            <p>
+              A separate simultaneous comparison against wet Ag/AgCl electrodes comprised four
+              recordings across three subjects, with one subject contributing two recordings. Both
+              channels were processed with a 0.5–40 Hz bandpass and a 50 Hz notch filter.
+            </p>
+            <div class="table-scroll">
+              <table class="results-table">
+                <caption>
+                  Simultaneous chest-band comparison with the wet-electrode reference
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      Measure
+                    </th>
+                    <th scope="col">
+                      Reported result
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                      R-peak detection F1
+                    </th>
+                    <td>
+                      0.97–1.00
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      RR-interval bias
+                    </th>
+                    <td>
+                      Within 2 ms of the reference
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      Waveform Pearson correlation
+                    </th>
+                    <td>
+                      Approximately 0.6–0.7
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      Template SNR
+                    </th>
+                    <td>
+                      10.5–15.0 dB; recording 1a was an outlier at 3.8 dB
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <figure>
+              <a href="../../assets/images/ecg-article-comparison.png"><img src="../../assets/images/ecg-article-comparison.png" alt="Four mean-beat overlays comparing capacitive ECG in blue with wet-electrode ECG in red across three subjects, showing timing agreement and waveform distortion." loading="lazy"></a>
+              <figcaption>
+                Article Figure 4: mean beats after per-beat z-normalisation and alignment.
+                Wet-electrode reference in red; capacitive ECG in blue. Subject 1 contributed
+                recordings 1a and 1b.
+              </figcaption>
+            </figure>
+            <p>
+              The prototype recovered beat timing and heart rate reliably in these recordings, but
+              waveform shape agreed only moderately with the reference. S- and T-wave attenuation
+              and a post-QRS negative excursion restrict the demonstrated use to rhythm and
+              heart-rate monitoring. The study does not establish diagnostic morphology analysis,
+              robust acquisition during motion or successful single-limb operation.
+            </p>
+            <p>
+              Future work includes unity-gain sensor buffers to improve headroom, flexible
+              electrodes for more stable coupling on curved limbs, and revised AC coupling and
+              adaptive filtering to address motion artefacts and waveform distortion.
+            </p>
+          </section>
+
+          <section id="publication">
+            <h2>
+              Article
+            </h2>
+            <p>
+              Godinho, B. &amp; Correia, M. V. <em>A Single-Limb, Fully Battery-Powered Capacitive ECG Acquisition System.</em> First author.
+            </p>
+            <p class="source-line">
+              Related master’s thesis: <em>Contactless Sensing System for Health and Well-being Monitoring</em>, University of Porto. IEEE-EMBS BSN, 2026, as listed in my CV.
+            </p>
+          </section>
+
+          <a class="return-link" href="../../experience/index.html">← Back to experience</a>
+        </article>
+
+      </div>
+    </main>
+    <footer class="site-footer shell">
+      <div>
+        <a class="footer-name" href="../../index.html">Bernardo Justiça Godinho</a>
+        <p>
+          Porto, Portugal
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:bernardojusticagodinho@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/bernardo-godinho-79a141219/">LinkedIn</a>
+    <a href="https://github.com/Bernardo-JG">GitHub</a>
+      </div>
+    </footer>
+
+  </body>
+</html>

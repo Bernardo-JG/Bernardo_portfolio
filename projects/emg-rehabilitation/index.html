@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Turning muscle signals into movement predictions for a desktop rehabilitation application.">
+    <meta name="theme-color" content="#f8f7f4">
+    <title>
+      MyoBuddy - EMG movement recognition · Bernardo Godinho
+    </title>
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../assets/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a class="wordmark" href="../../index.html" aria-label="Bernardo Godinho, home">Bernardo Godinho</a>
+      <nav aria-label="Main navigation">
+        <a href="../../index.html">Home</a>
+    <a href="../../experience/index.html">Experience</a>
+    <a href="../../projects/index.html" aria-current="page">Projects</a>
+    <a href="../../assets/documents/bernardo-godinho-cv.pdf">CV <span class="file-label">PDF</span></a>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="case-heading">
+        <p class="breadcrumb">
+          <a href="../../projects/index.html">← Projects</a>
+        </p>
+        <h1>
+          MyoBuddy - EMG movement recognition
+        </h1>
+        <p class="lead">
+          Turning muscle signals into movement predictions for a desktop rehabilitation application.
+        </p>
+        <dl class="case-meta">
+          <div>
+            <dt>
+              Context
+            </dt>
+            <dd>
+              University group project
+            </dd>
+          </div>
+          <div>
+            <dt>
+              My focus
+            </dt>
+            <dd>
+              Machine-learning component
+            </dd>
+          </div>
+          <div>
+            <dt>
+              Stack
+            </dt>
+            <dd>
+              Python · PySide6 · scikit-learn · Arduino
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <div class="case-layout">
+        <aside class="case-nav" aria-label="On this page">
+          <p>
+            On this page
+          </p>
+          <a href="#problem">The problem</a><a href="#contribution">My contribution</a><a href="#pipeline">From signal to prediction</a><a href="#results">Results &amp; limitations</a><a href="#links">Code &amp; context</a>
+        </aside>
+        <article class="case-content" aria-label="Project details">
+          <section id="problem">
+            <h2>
+              The problem
+            </h2>
+            <p>
+              The project aimed to support rehabilitation exercises by recognising the movement a
+              patient was performing from EMG signals and providing information about exercise
+              intensity.
+            </p>
+            <p>
+              MyoBuddy connects those predictions to a desktop workflow with English and Portuguese
+              instructions, exercise videos, visual/audio feedback and session reports. It also
+              includes serial commands for a four-servo Arduino demonstration arm.
+            </p>
+          </section>
+
+          <section id="contribution">
+            <h2>
+              My contribution
+            </h2>
+            <p>
+              I developed the machine-learning component responsible for identifying movement from
+              EMG data. I worked on turning recorded signals into predictions that the desktop
+              application could use during an exercise.
+            </p>
+            <p>
+              My focus was the link between the signal and the recognised action: preprocessing,
+              feature extraction and classification that could support the exercise workflow. The
+              shared application runs acquisition and inference in separate Qt threads.
+            </p>
+          </section>
+
+          <section id="pipeline">
+            <h2>
+              From signal to prediction
+            </h2>
+            <figure>
+              <a href="../../assets/images/emg-pipeline.png"><img src="../../assets/images/emg-pipeline.png" alt="Diagram of time-domain, frequency-domain and delta feature extraction followed by classifier training." loading="lazy"></a>
+              <figcaption>
+                The pipeline in my project notes brings together time-domain, frequency-domain and
+                short-term change features before classification.
+              </figcaption>
+            </figure>
+            <p>
+              The current training pipeline uses four EMG channels at a nominal 2 kHz, DC-offset
+              correction, a 20–450 Hz band-pass and a 50 Hz notch. It extracts 250 ms windows with
+              75% overlap, combining amplitude, frequency, cross-channel and temporal-change
+              features.
+            </p>
+            <p>
+              Model comparisons include random forest, SVM, logistic regression, gradient boosting
+              and an MLP. Scaling sits inside each model pipeline, and GroupKFold separates
+              trial-number groups. Predictions are smoothed over a short history before movement
+              events are interpreted.
+            </p>
+            <p>
+              The application checks completed movement events against the expected exercise step.
+              Cup, spoon, book and door-knob sequences connect individual classifications to a
+              longer activity. The checked-in acquisition worker uses simulated or prerecorded data,
+              providing a replay path for exploring the integration.
+            </p>
+          </section>
+
+          <section id="results">
+            <h2>
+              Results &amp; limitations
+            </h2>
+            <figure>
+              <a href="../../assets/images/emg-signals.png"><img src="../../assets/images/emg-signals.png" alt="Example EMG trace, smoothed signal energy and activity detection with movement classifications." loading="lazy"></a>
+              <figcaption>
+                An example of the processing stages used to connect recorded EMG to movement
+                feedback.
+              </figcaption>
+            </figure>
+            <figure>
+              <a href="../../assets/images/emg-results.png"><img src="../../assets/images/emg-results.png" alt="Class-level accuracy chart showing lower extensor performance than flexor and rest." loading="lazy"></a>
+              <figcaption>
+                This result illustrates uneven performance across movements.
+              </figcaption>
+            </figure>
+            <p>
+              This project showed me how classification errors can affect exercise feedback. The
+              evaluation needs to describe the complete movement-detection system as well as the
+              classifier.
+            </p>
+            <p>
+              The evaluation code considers detection rate, false activations and latency as well as
+              window-level classification. Trial grouping does not establish performance on unseen
+              participants. The public snapshot includes a model and replay recordings, but not the
+              complete labelled training dataset or a reproducible final metric table.
+            </p>
+            <p>
+              Further integration work includes aligning offline and runtime feature calculations
+              and reconciling the Grasp_Power classifier label with the application’s Grasp step.
+              These details affect exercise progression even when the classifier itself produces a
+              prediction.
+            </p>
+          </section>
+
+          <section id="links">
+            <h2>
+              Code &amp; context
+            </h2>
+            <p>
+              <a class="text-link" href="https://github.com/Bernardo-JG/MyoBuddy">MyoBuddy on GitHub</a>
+            </p>
+            <p>
+              The README explains the model pipeline, replay workflow, desktop setup, reporting and
+              Arduino protocol. This university prototype explores rehabilitation feedback; the
+              available evidence does not establish clinical benefit.
+            </p>
+          </section>
+
+          <a class="return-link" href="../../projects/index.html">← Back to projects</a>
+        </article>
+
+      </div>
+    </main>
+    <footer class="site-footer shell">
+      <div>
+        <a class="footer-name" href="../../index.html">Bernardo Justiça Godinho</a>
+        <p>
+          Porto, Portugal
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:bernardojusticagodinho@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/bernardo-godinho-79a141219/">LinkedIn</a>
+    <a href="https://github.com/Bernardo-JG">GitHub</a>
+      </div>
+    </footer>
+
+  </body>
+</html>
